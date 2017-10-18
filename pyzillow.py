@@ -24,8 +24,8 @@ class ZillowWrapper(object):
 
         url = 'http://www.zillow.com/webservice/GetDeepSearchResults.htm'
         params = {'address': address,'citystatezip': zipcode,'zws-id': self.api_key }
-        print ("0 --> url: ", url)                                             #DEBUG
-        print ("1 params: ", params)                                           #DEBUG
+#        print ("0 --> url: ", url)                                             #DEBUG
+#        print ("1 params: ", params)                                           #DEBUG
         return self.get_data(url, params)                                       # This is returning the execption DEBUG
 
     def get_updated_property_details(self, zpid):
@@ -43,24 +43,25 @@ class ZillowWrapper(object):
 
         try:
             request = requests.get(url=url, params=params, headers={'User-Agent': ''.join(['pyzillow/', '0.5.5',' (Python)'])})
-            print("2 Request: ",request)                                        #debug
+#            print("2 Request: ",request)                                        #debug
         except (requests.exceptions.ConnectionError, requests.exceptions.TooManyRedirects, requests.exceptions.Timeout):
             raise ZillowFail
 
         try:
             request.raise_for_status()
-            print ("3 Status: ", request)                                          #debug
+#            print ("3 Status: ", request)                                          #debug
         except requests.exceptions.HTTPError:
             raise ZillowFail
 
         try:
             response = ElementTree.fromstring(request.text)
-            print ("4 Response: ", response)                                          #debug
+#            print ("4 Response: ", response)                                          #debug
         except ElementTree.ParseError:
             print ("Zillow response is not a valid XML (%s)" % (params['address']))
             raise ZillowFail
 
-        if response.findall('message/code')[0].itertext is not '0':
+        test = response.findall('message/code')
+        if response.findall('message/code')[0].text is not '0':
             print ("5 Eror Code: ", response.findall('message/code')[0].text)     #debug
 #            raise ZillowError(int(response.findall('message/code')[0].itertext))    # This is trouing the exception DEBUG
 #           raise ZillowError(int(str(join(response.findall('message/code')[0]))))    # This is trouing the exception DEBUG
@@ -70,7 +71,6 @@ class ZillowWrapper(object):
                 print ("Zillow returned no results for (%s)" % (params['address']))
                 raise ZillowNoResults
             return response
-
 
 class ZillowResults(object):
     """
@@ -136,8 +136,7 @@ class GetDeepSearchResults(ZillowResults):
         'zestimate_amount': 'result/zestimate/amount',
         'zestimate_last_updated': 'result/zestimate/last-updated',
         'zestimate_value_change': 'result/zestimate/valueChange',
-        'zestimate_valuation_range_high':
-        'result/zestimate/valuationRange/high',
+        'zestimate_valuation_range_high':'result/zestimate/valuationRange/high',
         'zestimate_valuationRange_low': 'result/zestimate/valuationRange/low',
         'zestimate_percentile': 'result/zestimate/percentile',
     }
@@ -146,8 +145,8 @@ class GetDeepSearchResults(ZillowResults):
         """
         Creates instance of GeocoderResult from the provided XML data array
         """
-        print("6 data ",data)                                                   #debug
-        print ("6 data type ", type(data))                                           #debug
+#        print("6 data ",data)                                                   #debug
+#        print ("6 data type ", type(data))                                           #debug
         self.data = data.findall('response/results')[0]                         # exeception HERE No attribute findall
 #        self.data = re.findall('response/results',data)                        #debug
         for attr in self.attribute_mapping.__iter__():
