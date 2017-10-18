@@ -364,7 +364,8 @@ class Client(object):
             request['ignoreError'] = '1'
         attr = 'name' if named else 'fid'
         request['field'] = []
-        for field, value in fields.iteritems():
+#        for field, value in fields.iteritems():    #Py 3 renamed iteritems to items
+        for field, value in fields.items():        #Py 3 renamed iteritems to items
             request_field = ({attr: to_xml_name(field) if named else field}, value)
             request['field'].append(request_field)
         if uploads:
